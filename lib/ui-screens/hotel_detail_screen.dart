@@ -9,14 +9,18 @@ import 'favourite_screen.dart';
 import 'hotel_list_screen.dart';
 
 class HotelsDetails extends StatefulWidget {
-  const HotelsDetails({Key key}) : super(key: key);
-
+  final String uniqueKey;
+  const HotelsDetails({Key key, @required this.uniqueKey}) : super(key: key);
+  String getUniqueKey(){
+    return this.uniqueKey;
+  }
   @override
   _HotelsDetailsState createState() => _HotelsDetailsState();
 }
 
 class _HotelsDetailsState extends State<HotelsDetails> {
   CarouselSlider carouselSlider;
+
   int _current = 0;
   List imgList = [
     'https://images.unsplash.com/photo-1502117859338-fd9daa518a9a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
@@ -32,6 +36,15 @@ class _HotelsDetailsState extends State<HotelsDetails> {
     }
     return result;
   }
+
+  void initState() {
+    HotelsDetails hotelsDetails;
+    print("zain");
+    print(widget.uniqueKey);
+    // print(hotelsDetails.getUniqueKey());
+    super.initState();
+  }
+
   void backButton() {
     Navigator.push(context,
       MaterialPageRoute(builder: (context) => CardList()),);  }
@@ -44,7 +57,7 @@ class _HotelsDetailsState extends State<HotelsDetails> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xff1f1b51),
-          title: const Text('Paradis Hotel '),
+          title: const Text('Hi'),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {

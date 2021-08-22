@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:short_stay/models/hotel.dart';
+import 'package:short_stay/services/api.dart';
 import 'package:short_stay/ui-screens/setting_screen.dart';
 import 'favourite_screen.dart';
 import 'hotel_detail_screen.dart';
@@ -12,6 +14,14 @@ class CardList extends StatefulWidget {
 }
 
 class _CardListState extends State<CardList> {
+  Future<Hotel> _hotelData;
+  @override
+  void initState() {
+    _hotelData = Api().getHotels();
+    print("zain");
+    print(_hotelData);
+    super.initState();
+  }
   DateTime timeBackPressed = DateTime.now();
 
   @override
@@ -38,329 +48,102 @@ class _CardListState extends State<CardList> {
           centerTitle: true,
           elevation: 16,
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/background.jpg"),
-                fit: BoxFit.cover,
-              ),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/background.jpg"),
+              fit: BoxFit.cover,
             ),
-            child: InkWell(
-              onTap: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => HotelsDetails()));
-              },
-              child: Column(
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Card(
-                        color: Color(0xff323e78),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 16,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              child: Ink.image(
-                                height: 200,
-                                image: AssetImage(
-                                  'assets/images/h1.jpg',
+          ),
+          child: FutureBuilder<Hotel>(
+            future: _hotelData,
+            builder: (context,snapshot){
+              if(snapshot.hasData){
+                return SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: ListView.builder(
+                      itemCount: snapshot.data.data.length,
+                      itemBuilder: (context,index){
+                        var hotel = snapshot.data.data[index];
+                    return GestureDetector(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                            builder: (context) => HotelsDetails(uniqueKey: hotel.unique_prefix),
+                        )
+                        );
+                      },
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Card(
+                            color: Color(0xff323e78),
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 16,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: Image.network(
+                                      hotel.hotel_images[0],
+                                        fit: BoxFit.cover
+                                    ),
+                                  ),
                                 ),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
+                                Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Row(
+                                      mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Paradise Hotel',
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  hotel.hotel_name,
+                                                  style:
+                                                  TextStyle(color: Colors.white),
+                                                ),
+                                                Text(hotel.hotel_descriptions,
+                                                    style: TextStyle(
+                                                        color: Colors.white)),
+                                                Text(
+                                                  hotel.unique_prefix,
+                                                  style:
+                                                  TextStyle(color: Colors.white),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                          Text('2 bed,1 washroom',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                          Text(
-                                            'California,Miami',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                )),
-                          ],
+                                        ),
+                                        Icon(
+                                          Icons.favorite,
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    )),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Card(
-                        color: Color(0xff323e78),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 16,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              child: Ink.image(
-                                height: 200,
-                                image: AssetImage(
-                                  'assets/images/h2.jpg',
-                                ),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Paradise Hotel',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          Text('2 bed,1 washroom',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                          Text(
-                                            'California,Miami',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Card(
-                        color: Color(0xff323e78),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 16,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              child: Ink.image(
-                                height: 200,
-                                image: AssetImage(
-                                  'assets/images/h3.jpg',
-                                ),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Paradise Hotel',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          Text('2 bed,1 washroom',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                          Text(
-                                            'California,Miami',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Card(
-                        color: Color(0xff323e78),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 16,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              child: Ink.image(
-                                height: 200,
-                                image: AssetImage(
-                                  'assets/images/h4.jpg',
-                                ),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Paradise Hotel',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          Text('2 bed,1 washroom',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                          Text(
-                                            'California,Miami',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Card(
-                        color: Color(0xff323e78),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 16,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              child: Ink.image(
-                                height: 200,
-                                image: AssetImage(
-                                  'assets/images/h5.jpg',
-                                ),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Paradise Hotel',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          Text('2 bed,1 washroom',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                          Text(
-                                            'California,Miami',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                    );
+                  }),
+                );
+              }else{
+                return Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(

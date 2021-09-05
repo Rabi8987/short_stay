@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:short_stay/services/api.dart';
+import 'package:short_stay/ui-screens/bottom_navigation_bar.dart';
 import 'package:short_stay/ui-screens/register_screen.dart';
 
-import 'hotel_list_screen.dart';
-import 'package:form_validation/form_validation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
@@ -12,162 +12,193 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  String mobile, password;
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  login() {
+    final form = _formKey.currentState;
+    form.save();
+    print(mobile);
+    print(password);
+    Future<bool> loginStatus = Api().loginUser(mobile, password);
+    loginStatus.then((value) => {
+          if (value)
+            {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => bottomBar()))
+            }
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/images/background.jpg"),
               fit: BoxFit.cover,
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
-                      child: Text(
-                        'SignIn',
-                        style: TextStyle(
-                            fontSize: 40.0, fontWeight: FontWeight.bold),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
+                        child: Text(
+                          'SignIn',
+                          style: TextStyle(
+                              fontSize: 40.0, fontWeight: FontWeight.bold),
+                        ),
                       ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(130.0, 75.0, 0.0, 0.0),
+                        child: Text(
+                          '.',
+                          style: TextStyle(
+                              fontSize: 80.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff1f1b51)),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                    padding:
+                        EdgeInsets.only(top: 35.0, left: 20.0, right: 20.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          TextFormField(
+                            keyboardType: TextInputType.phone,
+                            autofocus: false,
+                            validator: (String value) {
+                              if (value.isEmpty) {
+                                return 'Please Enter Mobile Number';
+                              }
+                              return null;
+                            },
+                            onSaved: (String value) {
+                              mobile = value;
+                            },
+                            decoration: InputDecoration(
+                                labelText: 'PHONE ',
+                                labelStyle: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff1f1b51)),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Color(0xff1f1b51)))),
+                          ),
+                          SizedBox(height: 20.0),
+                          TextFormField(
+                            keyboardType: TextInputType.visiblePassword,
+                            autofocus: false,
+                            maxLength: 6,
+                            controller: _passwordController,
+                            obscureText: true,
+                            onSaved: (String value) {
+                              password = value;
+                            },
+                            validator: (String value) {
+                              if (value.isEmpty) {
+                                return 'Password cannot be empty';
+                              } else if (value.length < 4) {
+                                return 'Password must be at least 4 characters long.';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                                labelText: 'PASSWORD ',
+                                labelStyle: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff1f1b51)),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Color(0xff1f1b51)))),
+                          ),
+                          SizedBox(height: 5.0),
+                          Container(
+                            alignment: Alignment(1.0, 0.0),
+                            padding: EdgeInsets.only(top: 15.0, left: 20.0),
+                            child: InkWell(
+                              child: Text(
+                                'Forgot Password',
+                                style: TextStyle(
+                                    color: Color(0xff1f1b51),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Montserrat',
+                                    decoration: TextDecoration.underline),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 40.0),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xff1f1b51),
+                              ),
+                              onPressed: () {
+                                if ((_formKey.currentState.validate())) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text("Login Processing")));
+
+                                  login();
+                                }
+                              },
+                              child: Text('Sign In'))
+                        ],
+                      ),
+                    )),
+                SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'New to short stay ?',
+                      style: TextStyle(fontFamily: 'Montserrat'),
                     ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(130.0, 75.0, 0.0, 0.0),
+                    SizedBox(width: 5.0),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisterScreen()),
+                        );
+                      },
                       child: Text(
-                        '.',
+                        'Sign Up',
                         style: TextStyle(
-                            fontSize: 80.0,
+                            color: Color(0xff1f1b51),
+                            fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,
-                            color: Color(0xff1f1b51)),
+                            decoration: TextDecoration.underline),
                       ),
                     )
                   ],
-                ),
-              ),
-              Container(
-                  padding: EdgeInsets.only(top: 35.0, left: 20.0, right: 20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: <Widget>[
-                        TextFormField(
-                          validator: (email) {
-                            if (isEmailValid(email))
-                              return null;
-                            else
-                              return 'Enter a valid email address';
-                          },
-                          decoration: InputDecoration(
-                              labelText: 'EMAIL',
-                              labelStyle: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff1f1b51)),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Color(0xff1f1b51)))),
-                        ),
-                        SizedBox(height: 20.0),
-                        TextFormField(
-                          maxLength: 6,
-                          controller: _passwordController,
-                          obscureText: true,
-                          validator: (String value) {
-                            if (value.isEmpty) {
-                              return 'Password cannot be empty';
-                            } else if (value.length < 6) {
-                              return 'Password must be at least 6 characters long.';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              labelText: 'PASSWORD',
-                              labelStyle: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff1f1b51)),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Color(0xff1f1b51)))),
-                        ),
-                        SizedBox(height: 5.0),
-                        Container(
-                          alignment: Alignment(1.0, 0.0),
-                          padding: EdgeInsets.only(top: 15.0, left: 20.0),
-                          child: InkWell(
-                            child: Text(
-                              'Forgot Password',
-                              style: TextStyle(
-                                  color: Color(0xff1f1b51),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Montserrat',
-                                  decoration: TextDecoration.underline),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 40.0),
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Color(0xff1f1b51),
-                            ),
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                debugPrint('All validations passed!!!');
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => CardList()));
-                              }
-                            },
-                            child: Text('Sign In'))
-                      ],
-                    ),
-                  )),
-              SizedBox(height: 15.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'New to short stay ?',
-                    style: TextStyle(fontFamily: 'Montserrat'),
-                  ),
-                  SizedBox(width: 5.0),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterScreen()),
-                      );
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          color: Color(0xff1f1b51),
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
-                    ),
-                  )
-                ],
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ));
   }

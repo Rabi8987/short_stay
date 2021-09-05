@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:short_stay/models/HotelDetails.dart';
+import 'package:short_stay/models/RoomDetails.dart';
 import 'package:short_stay/ui-screens/bookig_details.dart';
+import 'package:short_stay/ui-screens/history_screen.dart';
 import 'package:short_stay/ui-screens/reservation_info_screen.dart';
 import 'package:short_stay/ui-screens/setting_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'favourite_screen.dart';
 import 'hotel_detail_screen.dart';
 import 'hotel_list_screen.dart';
+import 'login_screen.dart';
 
 class RoomDetails extends StatefulWidget {
-  const RoomDetails({Key key}) : super(key: key);
+  final RoomsDetails room;
+  final HotelDetails hotel;
+
+  const RoomDetails({Key key, @required this.room, @required this.hotel}) : super(key: key);
 
   @override
   _RoomDetailsState createState() => _RoomDetailsState();
@@ -17,18 +25,43 @@ class RoomDetails extends StatefulWidget {
 class _RoomDetailsState extends State<RoomDetails> {
   String ValueChoose;
 
+
   void backButton() {
-    Navigator.push(
+    Navigator.pop(
       context,
       MaterialPageRoute(builder: (context) => HotelsDetails()),
     );
+  }
+  Future<void> checkUser() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var email = prefs.getString('email');
+    if( email == null)
+      {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()));
+      }
+    else{
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ReservationInfo(room: widget.room,hotel: widget.hotel)));
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
+      onWillPop: ()  {
         backButton();
+        return Future.value(true);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -40,13 +73,15 @@ class _RoomDetailsState extends State<RoomDetails> {
               backButton();
             },
           ),
+          automaticallyImplyLeading: false,
+
         ),
         body: Stack(
           children: <Widget>[
             Container(
                 foregroundDecoration: BoxDecoration(color: Colors.black26),
                 height: 400,
-                child: Image.asset('assets/images/r1.jpg', fit: BoxFit.cover)),
+                child: Image.network(widget.room.image, fit: BoxFit.cover)),
             SingleChildScrollView(
               padding: const EdgeInsets.only(top: 16.0, bottom: 20.0),
               child: Column(
@@ -56,14 +91,13 @@ class _RoomDetailsState extends State<RoomDetails> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
-                      "Standard Single\nRoom",
+                      widget.room.category,
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 28.0,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-
                   Container(
                     padding: const EdgeInsets.all(32.0),
                     color: Colors.white,
@@ -82,15 +116,17 @@ class _RoomDetailsState extends State<RoomDetails> {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Icon(
-                                          Icons.wifi,
+                                          Icons.bathtub_rounded,
                                           color: Colors.black,
                                         ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.dinner_dining,
-                                          color: Colors.black,
+                                        child: Text(
+                                          widget.room.animites,
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              fontFamily: 'MaterialIcons'),
                                         ),
                                       ),
                                       Padding(
@@ -108,7 +144,7 @@ class _RoomDetailsState extends State<RoomDetails> {
                             Column(
                               children: <Widget>[
                                 Text(
-                                  "\PKR 7000",
+                                  "\PKR"+ widget.room.price.toString(),
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -179,10 +215,7 @@ class _RoomDetailsState extends State<RoomDetails> {
                               horizontal: 32.0,
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ReservationInfo()));
+                              checkUser();
                             },
                           ),
                         ),
@@ -195,66 +228,57 @@ class _RoomDetailsState extends State<RoomDetails> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          // type: BottomNavigationBarType.shifting,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedIconTheme: IconThemeData(color: Colors.white),
-          selectedItemColor: Colors.white,
-          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-          backgroundColor: Color(0xff323e78),
-          unselectedIconTheme: IconThemeData(
-            color: Colors.white,
-          ),
-
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => CardList()));
-                },
-                child: Icon(
-
-                  Icons.home,
-                  // color: Colors.white,
-
-                ),
-              ),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => FavouriteScreen()));
-                },
-                child: Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-
-                ),
-              ),
-              label: 'Favourite',
-            ),
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => Setting()));
-                },
-                child: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-
-                ),
-              ),
-              label: 'Setting',
-            ),
-          ],
-        ),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   type: BottomNavigationBarType.fixed,
+        //
+        //   items: <BottomNavigationBarItem>[
+        //     BottomNavigationBarItem(
+        //       icon: InkWell(
+        //           onTap: () {
+        //             Navigator.pop(
+        //               context,
+        //               MaterialPageRoute(builder: (context) => FavouriteScreen()),
+        //             );
+        //           },
+        //           child: Icon(Icons.favorite_outline)),
+        //       label: 'Favourite',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: InkWell(
+        //           onTap: () {
+        //             Navigator.pop(
+        //               context,
+        //               MaterialPageRoute(builder: (context) => CardList()),
+        //             );
+        //           },
+        //           child: Icon(Icons.home_outlined)),
+        //       label: 'Home',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: InkWell(
+        //           onTap: () {
+        //             Navigator.pop(
+        //               context,
+        //               MaterialPageRoute(builder: (context) => Setting()),
+        //             );
+        //           },
+        //           child: Icon(Icons.settings)),
+        //       label: 'Setting',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: InkWell(
+        //           onTap: () {
+        //             Navigator.pop(
+        //               context,
+        //               MaterialPageRoute(builder: (context) => historyScreen()),
+        //             );
+        //           },
+        //           child: Icon(Icons.settings)),
+        //       label: 'History',
+        //     ),
+        //   ],
+        //   selectedItemColor: Colors.blue,
+        // ),
       ),
     );
   }

@@ -1,22 +1,70 @@
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:short_stay/models/BookingDetail.dart';
+import 'package:short_stay/models/HotelDetails.dart';
+import 'package:short_stay/models/RoomDetails.dart';
+import 'package:short_stay/services/api.dart';
+import 'package:short_stay/ui-screens/history_screen.dart';
 import 'package:short_stay/ui-screens/room_detail_screen.dart';
 import 'package:short_stay/ui-screens/setting_screen.dart';
+import 'bottom_navigation_bar.dart';
 import 'favourite_screen.dart';
 import 'hotel_list_screen.dart';
 
 class BookingDetails extends StatefulWidget {
-  const BookingDetails({Key key}) : super(key: key);
+  final BookingDetail booking;
+  final RoomsDetails room;
+  final HotelDetails hotel;
+
+  const BookingDetails(
+      {Key key,
+      @required this.booking,
+      @required this.room,
+      @required this.hotel})
+      : super(key: key);
 
   @override
   _BookingDetailsState createState() => _BookingDetailsState();
 }
 
 class _BookingDetailsState extends State<BookingDetails> {
+
+  String checkInDay, checkOutDay;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    DateTime checkIndate = DateTime.parse(widget.booking.checkIn);
+    DateTime checkOutdate = DateTime.parse(widget.booking.checkOut);
+    checkInDay = DateFormat('EEEE').format(checkIndate);
+    checkOutDay = DateFormat('EEEE').format(checkOutdate);
+    super.initState();
+  }
+
   void backButton() {
     Navigator.pop(
       context,
-      MaterialPageRoute(builder: (context) => RoomDetails()),
+      MaterialPageRoute(builder: (context) => bottomBar()),
     );
+  }
+
+  void bookNow() {
+    print('room booking');
+    Future<bool> roomBooking =
+        Api().roomBooking(widget.booking, widget.hotel, widget.room);
+    // ignore: unrelated_type_equality_checks
+    if (roomBooking != false) {
+      roomBooking.then((value) => {
+            if (value)
+              {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => bottomBar(),
+                    )),
+              }
+          });
+    }
   }
 
   @override
@@ -24,6 +72,7 @@ class _BookingDetailsState extends State<BookingDetails> {
     return WillPopScope(
       onWillPop: () {
         backButton();
+        return Future.value(false);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -35,6 +84,7 @@ class _BookingDetailsState extends State<BookingDetails> {
               backButton();
             },
           ),
+          automaticallyImplyLeading: false,
           centerTitle: true,
           elevation: 16,
         ),
@@ -57,13 +107,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              child: Ink.image(
-                                height: 200,
-                                image: AssetImage(
-                                  'assets/images/h1.jpg',
-                                ),
-                                fit: BoxFit.fitWidth,
-                              ),
+                              child: Image.network(widget.hotel.hotel_images[0],
+                                  fit: BoxFit.cover),
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(16.0),
@@ -71,7 +116,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Rzzh Hotel Room',
+                                      widget.hotel.hotel_name,
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
@@ -80,14 +125,14 @@ class _BookingDetailsState extends State<BookingDetails> {
                                     Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: Text(
-                                          'standard hotel Room is booked with 2 bed and 2 bath & other facilities',
+                                          widget.hotel.hotel_descriptions,
                                           style:
                                               TextStyle(color: Colors.black)),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: Text(
-                                        'California, street #5 near sector 8',
+                                        widget.hotel.rating.toString(),
                                         style: TextStyle(
                                           color: Colors.grey,
                                           fontWeight: FontWeight.bold,
@@ -118,7 +163,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 8.0),
-                                              child: Text('16 Aug',
+                                              child: Text(
+                                                  widget.booking.checkIn,
                                                   style: TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 22)),
@@ -127,7 +173,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                               padding: const EdgeInsets.only(
                                                   top: 8.0),
                                               child: Text(
-                                                'Monday',
+                                                checkInDay,
                                                 style: TextStyle(
                                                     color: Colors.grey,
                                                     fontWeight: FontWeight.bold,
@@ -152,7 +198,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 8.0),
-                                              child: Text('20 Aug',
+                                              child: Text(
+                                                  widget.booking.checkOut,
                                                   style: TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 22)),
@@ -161,7 +208,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                               padding: const EdgeInsets.only(
                                                   top: 8.0),
                                               child: Text(
-                                                'Friday',
+                                                checkOutDay,
                                                 style: TextStyle(
                                                     color: Colors.grey,
                                                     fontWeight: FontWeight.bold,
@@ -173,6 +220,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                       ],
                                     )
                                   ],
+
                                 )),
                           ],
                         ),
@@ -189,7 +237,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                       child: Card(
                         color: Colors.black26,
                         clipBehavior: Clip.antiAlias,
-                        elevation:4,
+                        elevation: 4,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                         child: Column(
@@ -209,7 +257,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                 color: Colors.black,
                                                 fontSize: 22)),
                                         Text(
-                                          'PKR 7000',
+                                          'PKR ' + widget.room.price.toString(),
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 18),
@@ -227,7 +275,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                   color: Colors.black,
                                                   fontSize: 22)),
                                           Text(
-                                            'PKR 910',
+                                            '13%',
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 18),
@@ -251,11 +299,13 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                   fontStyle: FontStyle.italic,
                                                   fontSize: 22)),
                                           Text(
-                                            'PKR 7910',
+                                            'PKR ' +
+                                                ((widget.room.price * 0.13) +
+                                                        widget.room.price)
+                                                    .toString(),
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontStyle: FontStyle.italic,
-
                                                 fontSize: 18),
                                           ),
                                         ],
@@ -268,70 +318,35 @@ class _BookingDetailsState extends State<BookingDetails> {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                        height: 40.0,
+                        child: Material(
+                          borderRadius: BorderRadius.circular(20.0),
+                          shadowColor: Colors.blueAccent,
+                          color: Color(0xff1f1b51),
+                          elevation: 7.0,
+                          child: GestureDetector(
+                            onTap: () {
+                              bookNow();
+                            },
+                            child: Center(
+                              child: Text(
+                                'Book Now',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Montserrat'),
+                              ),
+                            ),
+                          ),
+                        )),
+                  )
                 ],
               ),
             ],
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          // type: BottomNavigationBarType.shifting,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedIconTheme: IconThemeData(color: Colors.white),
-          selectedItemColor: Colors.white,
-          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-          backgroundColor: Color(0xff323e78),
-          unselectedIconTheme: IconThemeData(
-            color: Colors.white,
-          ),
-
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => CardList()));
-                },
-                child: Icon(
-
-                  Icons.home,
-                  // color: Colors.white,
-
-                ),
-              ),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => FavouriteScreen()));
-                },
-                child: Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-
-                ),
-              ),
-              label: 'Favourite',
-            ),
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => Setting()));
-                },
-                child: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-
-                ),
-              ),
-              label: 'Setting',
-            ),
-          ],
         ),
       ),
     );

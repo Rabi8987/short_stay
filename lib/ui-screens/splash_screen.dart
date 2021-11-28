@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:short_stay/ui-screens/hotel_list_screen.dart';
 import 'dart:async';
 
+import 'bottom_navigation_bar.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key key}) : super(key: key);
 
@@ -17,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(
         Duration(seconds: 4),
             () => Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => CardList())));
+            context, MaterialPageRoute(builder: (context) => bottomBar())));
   }
 
   @override

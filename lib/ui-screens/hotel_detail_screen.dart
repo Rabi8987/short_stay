@@ -1,33 +1,35 @@
-
-import 'package:carousel_pro/carousel_pro.dart';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:short_stay/models/HotelDetails.dart';
+import 'package:short_stay/models/Rooms.dart';
+import 'package:short_stay/services/api.dart';
+import 'package:short_stay/ui-screens/bottom_navigation_bar.dart';
+import 'package:short_stay/ui-screens/history_screen.dart';
 import 'package:short_stay/ui-screens/room_detail_screen.dart';
 import 'package:short_stay/ui-screens/setting_screen.dart';
 import 'favourite_screen.dart';
 import 'hotel_list_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class HotelsDetails extends StatefulWidget {
-  final String uniqueKey;
-  const HotelsDetails({Key key, @required this.uniqueKey}) : super(key: key);
-  String getUniqueKey(){
-    return this.uniqueKey;
-  }
+  final HotelDetails hotel;
+
+  const HotelsDetails({Key key, @required this.hotel}) : super(key: key);
+
   @override
   _HotelsDetailsState createState() => _HotelsDetailsState();
 }
 
 class _HotelsDetailsState extends State<HotelsDetails> {
   CarouselSlider carouselSlider;
+  Future<Rooms> _roomData;
 
   int _current = 0;
-  List imgList = [
-    'https://images.unsplash.com/photo-1502117859338-fd9daa518a9a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1554321586-92083ba0a115?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1536679545597-c2e5e1946495?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1543922596-b3bbaba80649?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
-  ];
+  List imgList = [];
 
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
@@ -36,291 +38,185 @@ class _HotelsDetailsState extends State<HotelsDetails> {
     }
     return result;
   }
+  launchMap() async{
+    double lat = widget.hotel.latitude;
+    double long = widget.hotel.longitude;
+    var mapSchema = 'geo:$lat,$long';
+    if (await canLaunch(mapSchema)) {
+      await launch(mapSchema);
+    } else {
+      throw 'Could not launch $mapSchema';
+    }
+  }
 
   void initState() {
-    HotelsDetails hotelsDetails;
-    print("zain");
-    print(widget.uniqueKey);
-    // print(hotelsDetails.getUniqueKey());
+    imgList = widget.hotel.hotel_images;
+    _roomData = Api().getHotelRooms(widget.hotel.unique_prefix);
+    print(_roomData);
     super.initState();
   }
 
   void backButton() {
-    Navigator.push(context,
-      MaterialPageRoute(builder: (context) => CardList()),);  }
+    Navigator.pop(
+      context,
+      MaterialPageRoute(builder: (context) => bottomBar()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        backButton();
-      },
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xff1f1b51),
-          title: const Text('Hi'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              backButton();
-            },
-          ),
+          title: Text(widget.hotel.hotel_name),
+          actions: [
+            IconButton(
+              onPressed: () {
+                launchMap();
+              },
+              icon: Icon(Icons.my_location),
+            ),
+
+          ],
           centerTitle: true,
           elevation: 16,
         ),
         body: Container(
-          child: ListView(
-            children: [
-              Column(
-                children: [
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: 200,
-                      aspectRatio: 16 / 9,
-                      viewportFraction: 0.8,
-                      initialPage: 0,
-                      enableInfiniteScroll: true,
-                      reverse: false,
-                      autoPlay: true,
-                      autoPlayInterval: Duration(seconds: 3),
-                      autoPlayAnimationDuration: Duration(milliseconds: 800),
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      enlargeCenterPage: true,
-                      scrollDirection: Axis.horizontal,
-                    ),
-                    items: imgList.map((imgUrl) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                            ),
-                            child: Image.network(
-                              imgUrl,
-                              fit: BoxFit.fill,
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (context) => RoomDetails()));
-                    },
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Card(
-                          color: Color(0xff323e78),
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 16,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                child: Ink.image(
-                                  height: 200,
-                                  image: AssetImage(
-                                    'assets/images/h1.jpg',
-                                  ),
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              ),
-                              Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Standard Room',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      Text('',
-                                          style: TextStyle(color: Colors.white)),
-                                      Text(
-                                        'California,Miami',
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    ],
-                                  )),
-                              ButtonBar()
-                            ],
-                          ),
-                        ),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/background.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: FutureBuilder<Rooms>(
+            future: _roomData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Column(
+                  children: [
+                    CarouselSlider(
+                      options: CarouselOptions(
+                        height: 200,
+                        aspectRatio: 16 / 9,
+                        viewportFraction: 0.8,
+                        initialPage: 0,
+                        enableInfiniteScroll: true,
+                        reverse: false,
+                        autoPlay: true,
+                        autoPlayInterval: Duration(seconds: 3),
+                        autoPlayAnimationDuration: Duration(milliseconds: 800),
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        enlargeCenterPage: true,
+                        scrollDirection: Axis.horizontal,
                       ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (context) => RoomDetails()));
-                    },
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Card(
-                          color: Color(0xff323e78),
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 16,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                child: Ink.image(
-                                  height: 200,
-                                  image: AssetImage(
-                                    'assets/images/h2.jpg',
-                                  ),
-                                  fit: BoxFit.fitWidth,
-                                ),
+                      items: imgList.map((imgUrl) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 10.0),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
                               ),
-                              Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Paradise Hotel',
-                                        style: TextStyle(color: Colors.white),
+                              child: Image.network(
+                                imgUrl,
+                                fit: BoxFit.fill,
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height,
+                        child: ListView.builder(
+                            itemCount: snapshot.data.data.length,
+                            itemBuilder: (context, index) {
+                              var room = snapshot.data.data[index];
+                              return GestureDetector(
+                                onTap: () async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setInt("roomId", room.id);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RoomDetails(
+                                            room: room, hotel: widget.hotel),
+                                      ));
+                                },
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Card(
+                                      color: Color(0xff323e78),
+                                      clipBehavior: Clip.antiAlias,
+                                      elevation: 16,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            child: AspectRatio(
+                                              aspectRatio: 1,
+                                              child: Image.network(room.image,
+                                                  fit: BoxFit.cover),
+                                            ),
+                                          ),
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            room.category,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )),
+                                        ],
                                       ),
-                                      Text('2 bed,1 washroom',
-                                          style: TextStyle(color: Colors.white)),
-                                      Text(
-                                        'California,Miami',
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    ],
-                                  )),
-                              ButtonBar()
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Card(
-                        color: Color(0xff323e78),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 16,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              child: Ink.image(
-                                height: 200,
-                                image: AssetImage(
-                                  'assets/images/h3.jpg',
-                                ),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Paradise Hotel',
-                                      style: TextStyle(color: Colors.white),
                                     ),
-                                    Text('2 bed,1 washroom',
-                                        style: TextStyle(color: Colors.white)),
-                                    Text(
-                                      'California,Miami',
-                                      style: TextStyle(color: Colors.white),
-                                    )
-                                  ],
-                                )),
-                            ButtonBar()
-                          ],
-                        ),
+                                  ),
+                                ),
+                              );
+                            }),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                );
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          // type: BottomNavigationBarType.shifting,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedIconTheme: IconThemeData(color: Colors.white),
-          selectedItemColor: Colors.white,
-          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-          backgroundColor: Color(0xff323e78),
-          unselectedIconTheme: IconThemeData(
-            color: Colors.white,
-          ),
-
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => CardList()));
-                },
-                child: Icon(
-
-                  Icons.home,
-                  // color: Colors.white,
-
-                ),
-              ),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => FavouriteScreen()));
-                },
-                child: Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-
-                ),
-              ),
-              label: 'Favourite',
-            ),
-            BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => Setting()));
-                },
-                child: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-
-                ),
-              ),
-              label: 'Setting',
-            ),
-          ],
         ),
       ),
     );
   }
-
 }
-
-

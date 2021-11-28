@@ -9,7 +9,7 @@ class HotelDetails{
   double longitude;
   List<dynamic> amenities;
   List<dynamic> hotel_images;
-  double rating;
+  String rating;
   String unique_prefix;
 
   HotelDetails({

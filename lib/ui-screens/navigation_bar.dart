@@ -23,10 +23,10 @@ class _NavigationBarState extends State<NavigationBar> {
     FavouriteScreen(),
     Setting(),
     //other pages
-    BookingDetails(),
-    RoomDetails(),
-    UpdateAccount(),
-    UpdatePassword(),
+    // BookingDetails(),
+    // RoomDetails(),
+    // UpdateAccount(),
+    // UpdatePassword(),
 
   ];
 

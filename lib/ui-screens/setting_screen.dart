@@ -19,20 +19,16 @@ class _SettingState extends State<Setting> {
   String name, email, mobile, username;
   bool session;
 
-  // void backButton() async {
-  //   Navigator.pop(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => bottomBar()),
-  //   );
-  // }
-
   @override
   void initState() {
     // TODO: implement initState
-    getSessionDetails();
-
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) => screenData());
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadDetails());
+  }
+
+  void loadDetails() {
+    getSessionDetails();
+    screenData();
   }
 
   void getSessionDetails() async {
@@ -55,171 +51,116 @@ class _SettingState extends State<Setting> {
   }
 
   screenData() {
-    print(session.runtimeType);
-    if (session != null) {
-      if (session == true) {
-        print("here if");
-        return Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: Card(
-                  // color: Colors.black12,
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name != null ? name : "",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    Text(
-                      email != null ? email : "",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                  ],
-                ),
-              )),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+    if (session == true) {
+      return Column(children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            width: double.infinity,
             child: Card(
+                // color: Colors.black12,
+                child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UpdatePassword()));
-                    },
-                    child: ListTile(
-                      leading: FlutterLogo(),
-                      title: Text('Change Password'),
-                      trailing: Icon(Icons.arrow_forward),
-                    ),
+                  Text(
+                    name != null ? name : "",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                  Divider(),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UpdateAccount()));
-                    },
-                    child: ListTile(
-                      leading: FlutterLogo(),
-                      title: Text('Update your Profile'),
-                      trailing: Icon(Icons.arrow_forward),
-                    ),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: FlutterLogo(),
-                    title: Text('About App'),
-                    trailing: Icon(Icons.arrow_forward),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: FlutterLogo(),
-                    title: Text('Term & Conditions'),
-                    trailing: Icon(Icons.arrow_forward),
-                  ),
-                  Divider(),
-                  ListTile(
-                    onTap: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      prefs.clear();
-                      prefs.setBool("Session", false);
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => bottomBar()));
-                    },
-                    leading: FlutterLogo(),
-                    title: Text('Log Out'),
-                    trailing: Icon(Icons.arrow_forward),
+                  Text(
+                    email != null ? email : "",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ],
               ),
-            ),
-          )
-        ]);
-      } else {
-        setState(() {});
-        print("here else");
-        return new Column(children: [
-          SizedBox(height: MediaQuery.of(context).size.height / 3),
-          Container(
-              alignment: Alignment.center,
-              width: MediaQuery.of(context).size.width / 2,
-              height: 40.0,
-              child: Material(
-                borderRadius: BorderRadius.circular(20.0),
-                shadowColor: Colors.blueAccent,
-                color: Color(0xff1f1b51),
-                elevation: 7.0,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()));
-                  },
-                  child: Center(
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Montserrat'),
-                    ),
-                  ),
-                ),
-              )),
-        ]);
-      }
-    } else {
-      return Column(children: [
-        SizedBox(height: MediaQuery.of(context).size.height / 3),
-        Container(
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width / 2,
-            height: 40.0,
-            child: Material(
-              borderRadius: BorderRadius.circular(20.0),
-              shadowColor: Colors.blueAccent,
-              color: Color(0xff1f1b51),
-              elevation: 7.0,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                },
-                child: Center(
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Montserrat'),
-                  ),
-                ),
-              ),
             )),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UpdatePassword()));
+                  },
+                  child: ListTile(
+                    leading: FlutterLogo(),
+                    title: Text('Change Password'),
+                    trailing: Icon(Icons.arrow_forward),
+                  ),
+                ),
+                Divider(),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UpdateAccount()));
+                  },
+                  child: ListTile(
+                    leading: FlutterLogo(),
+                    title: Text('Update your Profile'),
+                    trailing: Icon(Icons.arrow_forward),
+                  ),
+                ),
+                Divider(),
+                ListTile(
+                  leading: FlutterLogo(),
+                  title: Text('About App'),
+                  trailing: Icon(Icons.arrow_forward),
+                ),
+                Divider(),
+                ListTile(
+                  leading: FlutterLogo(),
+                  title: Text('Term & Conditions'),
+                  trailing: Icon(Icons.arrow_forward),
+                ),
+                Divider(),
+                ListTile(
+                  onTap: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.clear();
+                    prefs.setBool("Session", false);
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => bottomBar()));
+                  },
+                  leading: FlutterLogo(),
+                  title: Text('Log Out'),
+                  trailing: Icon(Icons.arrow_forward),
+                ),
+              ],
+            ),
+          ),
+        )
       ]);
+    } else {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height / 1.25,
+        child: Center(
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xff1f1b51),
+              ),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+              child: Text('Login')),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      // onWillPop: () {
-      //   backButton();
-      //   return Future.value(false);
-      // },
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xff1f1b51),

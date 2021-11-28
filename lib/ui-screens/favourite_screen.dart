@@ -178,64 +178,17 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
           },
         );
       } else {
-        return new Column(children: [
-          SizedBox(height: MediaQuery.of(context).size.height / 3),
-          Container(
-              alignment: Alignment.center,
-              width: MediaQuery.of(context).size.width / 2,
-              height: 40.0,
-              child: Material(
-                borderRadius: BorderRadius.circular(20.0),
-                shadowColor: Colors.blueAccent,
-                color: Color(0xff1f1b51),
-                elevation: 7.0,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()));
-                  },
-                  child: Center(
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Montserrat'),
-                    ),
-                  ),
-                ),
-              )),
-        ]);
-      }
-    } else {
-      return Column(children: [
-        SizedBox(height: MediaQuery.of(context).size.height / 3),
-        Container(
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width / 2,
-            height: 40.0,
-            child: Material(
-              borderRadius: BorderRadius.circular(20.0),
-              shadowColor: Colors.blueAccent,
-              color: Color(0xff1f1b51),
-              elevation: 7.0,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                },
-                child: Center(
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Montserrat'),
-                  ),
-                ),
+        return Center(
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xff1f1b51),
               ),
-            )),
-      ]);
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+              child: Text('Login')),
+        );      }
     }
   }
 

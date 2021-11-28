@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +12,8 @@ import 'package:short_stay/ui-screens/room_detail_screen.dart';
 import 'package:short_stay/ui-screens/setting_screen.dart';
 import 'favourite_screen.dart';
 import 'hotel_list_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class HotelsDetails extends StatefulWidget {
   final HotelDetails hotel;
@@ -34,6 +38,16 @@ class _HotelsDetailsState extends State<HotelsDetails> {
     }
     return result;
   }
+  launchMap() async{
+    double lat = widget.hotel.latitude;
+    double long = widget.hotel.longitude;
+    var mapSchema = 'geo:$lat,$long';
+    if (await canLaunch(mapSchema)) {
+      await launch(mapSchema);
+    } else {
+      throw 'Could not launch $mapSchema';
+    }
+  }
 
   void initState() {
     imgList = widget.hotel.hotel_images;
@@ -56,6 +70,15 @@ class _HotelsDetailsState extends State<HotelsDetails> {
         appBar: AppBar(
           backgroundColor: Color(0xff1f1b51),
           title: Text(widget.hotel.hotel_name),
+          actions: [
+            IconButton(
+              onPressed: () {
+                launchMap();
+              },
+              icon: Icon(Icons.my_location),
+            ),
+
+          ],
           centerTitle: true,
           elevation: 16,
         ),
@@ -166,12 +189,6 @@ class _HotelsDetailsState extends State<HotelsDetails> {
                                                         children: [
                                                           Text(
                                                             room.category,
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                          Text(
-                                                            room.capacity,
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white),

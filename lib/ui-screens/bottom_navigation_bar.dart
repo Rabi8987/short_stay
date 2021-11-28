@@ -13,13 +13,13 @@ class bottomBar extends StatefulWidget {
 }
 
 class _bottomBarState extends State<bottomBar> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    FavouriteScreen(),
     CardList(),
-    Setting(),
+    FavouriteScreen(),
     historyScreen(),
+    Setting(),
   ];
 
   void _onItemTapped(int index) {
@@ -38,20 +38,20 @@ class _bottomBarState extends State<bottomBar> {
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_outline),
-            label: 'Favourite',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Setting',
+            icon: Icon(Icons.favorite_outline),
+            label: 'Favourite',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history_sharp),
             label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Setting',
           ),
         ],
         currentIndex: _selectedIndex,

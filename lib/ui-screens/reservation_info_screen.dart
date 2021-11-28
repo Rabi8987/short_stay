@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_switch/flutter_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:short_stay/models/BookingDetail.dart';
 import 'package:short_stay/models/HotelDetails.dart';
@@ -19,8 +20,11 @@ class ReservationInfo extends StatefulWidget {
 }
 
 class _ReservationInfoState extends State<ReservationInfo> {
+  TimeOfDay selectedTime = TimeOfDay.now();
   TimeOfDay time;
   TimeOfDay picked;
+  bool asStatus = false;
+
 
   String getText() {
     if (time == null) {
@@ -33,13 +37,201 @@ class _ReservationInfoState extends State<ReservationInfo> {
     }
   }
 
-  Future<Null> selectTime(BuildContext context) async {
-    picked = await showTimePicker(context: context, initialTime: time);
-    if (picked != null) {
-      setState(() {
-        time = picked;
-      });
+  bool displayDate = true;
+  bool displayAll = false;
+
+  showData() {
+    print("in func");
+    print(displayDate);
+    if (displayDate) {
+      return Column(children: [
+        DateTimePicker(
+          initialValue: '',
+          // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
+          type: DateTimePickerType.date,
+          dateLabelText: 'Check In Date',
+          style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.bold,
+              color: Color(0xff1f1b51)),
+          firstDate: DateTime(2001),
+          lastDate: DateTime.now().add(Duration(days: 365)),
+          // This will add one year from current date
+          validator: (String value) {
+            if (value.isEmpty) {
+              return 'Please Enter check In Date';
+            }
+            return null;
+          },
+          onChanged: (value) {
+            if (value.isNotEmpty) {
+              setState(() {
+                _checkInController.text = value;
+              });
+            }
+          },
+          // We can also use onSaved
+          onSaved: (value) {
+            if (value.isNotEmpty) {
+              _checkInController.text = value;
+            }
+          },
+        ),
+        SizedBox(height: 10),
+        DateTimePicker(
+          initialValue: '',
+          // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
+          type: DateTimePickerType.date,
+          cursorColor: Color(0xff1f1b51),
+          dateLabelText: 'Check Out Date',
+          style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.bold,
+              color: Color(0xff1f1b51)),
+          firstDate: DateTime(2001),
+          lastDate: DateTime.now().add(Duration(days: 365)),
+          // This will add one year from current date
+          validator: (String value) {
+            if (value.isEmpty) {
+              return 'Please Enter check Out Date';
+            }
+            return null;
+          },
+          onChanged: (value) {
+            if (value.isNotEmpty) {
+              setState(() {
+                _checkOutController.text = value;
+              });
+            }
+          },
+          // We can also use onSaved
+          onSaved: (value) {
+            if (value.isNotEmpty) {
+              _checkOutController.text = value;
+            }
+          },
+        )
+      ]);
     }
+    else if (displayAll) {
+      return Column(
+          children: [
+            DateTimePicker(
+              initialValue: '',
+              // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
+              type: DateTimePickerType.date,
+              dateLabelText: 'Check In Date',
+              style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff1f1b51)),
+              firstDate: DateTime(2001),
+              lastDate: DateTime.now().add(Duration(days: 365)),
+              // This will add one year from current date
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please Enter check In Date';
+                }
+                return null;
+              },
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() {
+                    _checkInController.text = value;
+                  });
+                }
+              },
+              // We can also use onSaved
+              onSaved: (value) {
+                if (value.isNotEmpty) {
+                  _checkInController.text = value;
+                }
+              },
+            ),
+            SizedBox(height: 10),
+            DateTimePicker(
+              initialValue: '',
+              // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
+              type: DateTimePickerType.date,
+              cursorColor: Color(0xff1f1b51),
+              dateLabelText: 'Check Out Date',
+              style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff1f1b51)),
+              firstDate: DateTime(2001),
+              lastDate: DateTime.now().add(Duration(days: 365)),
+              // This will add one year from current date
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please Enter check Out Date';
+                }
+                return null;
+              },
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() {
+                    _checkOutController.text = value;
+                  });
+                }
+              },
+              // We can also use onSaved
+              onSaved: (value) {
+                if (value.isNotEmpty) {
+                  _checkOutController.text = value;
+                }
+              },
+            ),
+            TextField(
+              onTap: () {
+                _selectCheckInTime(context);
+              },
+              readOnly: true,
+              controller: _checkInTimeController,
+              decoration: InputDecoration(
+                  labelText: 'TIME CHECK-IN',
+                  labelStyle: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff1f1b51)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff1f1b51)))),
+            ),
+            // Text("${selectedTime.hour}:${selectedTime.minute}")
+            SizedBox(height: 10),
+            TextField(
+              onTap: () {
+                _selectCheckOutTime(context);
+              },
+              readOnly: true,
+              controller: _checkOutTimeController,
+              decoration: InputDecoration(
+                  labelText: 'TIME CHECK-OUT',
+                  labelStyle: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff1f1b51)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff1f1b51)))),
+            )
+          ]);
+    } else {
+      return Text("");
+    }
+  }
+
+
+
+  clickDisplay(String flag) {
+    setState(() {
+      if (flag == "date") {
+        displayDate = true;
+        displayAll = false;
+      } else {
+        displayDate = false;
+        displayAll = true;
+      }
+    });
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -48,10 +240,10 @@ class _ReservationInfoState extends State<ReservationInfo> {
   final _nameController = TextEditingController();
   final _checkInController = TextEditingController();
   final _checkOutController = TextEditingController();
-  final _timeController = TextEditingController();
+  final _checkInTimeController = TextEditingController();
+  final _checkOutTimeController = TextEditingController();
 
   final TextEditingController controller = TextEditingController();
-
   String initialCountry = 'PK';
   PhoneNumber number = PhoneNumber(isoCode: 'PK');
   String mobile, email, name;
@@ -62,6 +254,54 @@ class _ReservationInfoState extends State<ReservationInfo> {
     fillFormData();
     super.initState();
     time = TimeOfDay.now();
+  }
+
+  Future<void> _selectCheckInTime(BuildContext context) async {
+    final TimeOfDay picked_s = await showTimePicker(
+        context: context,
+        initialTime: selectedTime,
+        builder: (BuildContext context, Widget child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+            child: child,
+          );
+        });
+
+    if (picked_s != null && picked_s != selectedTime) {
+      setState(() {
+        _checkInTimeController.text =
+            picked_s.hour.toString() + ":" + picked_s.minute.toString();
+      });
+    }else{
+      setState(() {
+        _checkInTimeController.text =
+            selectedTime.hour.toString() + ":" + selectedTime.minute.toString();
+      });
+    }
+  }
+
+  Future<void> _selectCheckOutTime(BuildContext context) async {
+    final TimeOfDay picked_s = await showTimePicker(
+        context: context,
+        initialTime: selectedTime,
+        builder: (BuildContext context, Widget child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child,
+          );
+        });
+
+    if (picked_s != null && picked_s != selectedTime) {
+      setState(() {
+        _checkOutTimeController.text =
+            picked_s.hour.toString() + ":" + picked_s.minute.toString();
+      });
+    } else {
+      setState(() {
+        _checkOutTimeController.text =
+            selectedTime.hour.toString() + ":" + selectedTime.minute.toString();
+      });
+    }
   }
 
   void fillFormData() async {
@@ -80,42 +320,52 @@ class _ReservationInfoState extends State<ReservationInfo> {
   void confirDetails() {
     final form = _formKey.currentState;
     form.save();
-
-    var booking = BookingDetail.fromJson({
+    var booking = BookingDetail.fromJson(
+        {
       "id": null,
       "checkIn": _checkInController.text,
       "checkOut": _checkOutController.text,
       "mobile": _mobileController.text,
       "email": _emailController.text,
       "userId": userId,
-      "roomId": roomId
+      "roomId": roomId,
+      "checkInTime": _checkInTimeController.text,
+      "checkOutTime": _checkOutTimeController.text
     });
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => BookingDetails(
-                booking: booking, room: widget.room, hotel: widget.hotel)));
+            builder: (context) =>
+                BookingDetails(
+                    booking: booking, room: widget.room, hotel: widget.hotel,ac_status:asStatus)));
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/background.jpg"),
-              fit: BoxFit.cover,
+      resizeToAvoidBottomInset: false,
+      body: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+              "assets/images/background.jpg",
             ),
+            fit: BoxFit.cover,
           ),
+        ),
+        child: SingleChildScrollView(
           child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-                  Widget>[
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+              Widget>[
             Container(
               child: Stack(
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
+                    padding: EdgeInsets.fromLTRB(15.0, 60.0, 0.0, 0.0),
                     child: Text(
                       'Enter You Details',
                       style: TextStyle(
@@ -123,7 +373,7 @@ class _ReservationInfoState extends State<ReservationInfo> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.fromLTRB(315.0, 90.0, 0.0, 0.0),
+                    padding: EdgeInsets.fromLTRB(320.0, 40.0, 0.0, 0.0),
                     child: Text(
                       '.',
                       style: TextStyle(
@@ -142,205 +392,81 @@ class _ReservationInfoState extends State<ReservationInfo> {
                 color: Colors.transparent,
                 child: Column(
                   children: [
-                    Container(
-                        padding:
-                            EdgeInsets.only(top: 35.0, left: 20.0, right: 20.0),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: <Widget>[
-                              TextField(
-                                controller: _emailController,
-                                decoration: InputDecoration(
-                                    labelText: 'EMAIL',
-                                    labelStyle: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff1f1b51)),
-                                    // hintText: 'EMAIL',
-                                    // hintStyle: ,
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color(0xff1f1b51)))),
-                              ),
-                              SizedBox(height: 10.0),
-                              InternationalPhoneNumberInput(
-                                textStyle: TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xff1f1b51)),
-                                onInputChanged: (PhoneNumber number) {},
-                                onInputValidated: (bool value) {},
-                                selectorConfig: SelectorConfig(
-                                  selectorType:
-                                      PhoneInputSelectorType.BOTTOM_SHEET,
-                                ),
-                                ignoreBlank: false,
-                                autoValidateMode: AutovalidateMode.always,
-                                selectorTextStyle:
-                                    TextStyle(color: Color(0xff1f1b51)),
-                                initialValue: number,
-                                textFieldController: _mobileController,
-                                formatInput: false,
-                                keyboardType: TextInputType.numberWithOptions(
-                                    signed: true, decimal: true),
-                                // inputBorder: OutlineInputBorder(),
-                                onSaved: (PhoneNumber number) {
-                                  print('On Saved: $number');
-                                },
-                              ),
-                              SizedBox(height: 10.0),
-                              DateTimePicker(
-                                initialValue: '',
-                                // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
-                                type: DateTimePickerType.date,
-                                dateLabelText: 'Check In Date',
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xff1f1b51)),
-                                firstDate: DateTime(2001),
-                                lastDate:
-                                    DateTime.now().add(Duration(days: 365)),
-                                // This will add one year from current date
-                                validator: (value) {
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
+                    Form(
+                      key: _formKey,
+                      child: Center(
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                FlutterSwitch(
+                                  width: 85.0,
+                                  height: 35.0,
+                                  valueFontSize: 15.0,
+                                  toggleSize: 30.0,
+                                  borderRadius: 30.0,
+                                  padding: 8.0,
+                                  showOnOff: true,
+                                  activeColor: Color(0xff1f1b51),
+                                  value: asStatus,
+                                  onToggle: (value) {
                                     setState(() {
-                                      _checkInController.text = value;
+                                      asStatus = value;
                                     });
-                                  }
-                                },
-                                // We can also use onSaved
-                                onSaved: (value) {
-                                  if (value.isNotEmpty) {
-                                    _checkInController.text = value;
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 10),
-                              DateTimePicker(
-                                initialValue: '',
-                                // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
-                                type: DateTimePickerType.date,
-                                cursorColor: Color(0xff1f1b51),
-                                dateLabelText: 'Check Out Date',
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xff1f1b51)),
-                                firstDate: DateTime(2001),
-                                lastDate:
-                                    DateTime.now().add(Duration(days: 365)),
-                                // This will add one year from current date
-                                validator: (value) {
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    setState(() {
-                                      _checkOutController.text = value;
-                                    });
-                                  }
-                                },
-                                // We can also use onSaved
-                                onSaved: (value) {
-                                  if (value.isNotEmpty) {
-                                    _checkOutController.text = value;
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 10),
-                              GestureDetector(
-                                onTap: () => selectTime(context),
-                                child: AbsorbPointer(
-                                  child: TextField(
-                                    controller: _timeController,
-                                    decoration: InputDecoration(
-                                        icon: IconButton(
-                                          icon:
-                                              Icon(Icons.access_time_outlined),
-                                          color: Color(0xff1f1b51),
-                                        ),
-                                        labelText: 'CHECK IN TIME ',
-                                        labelStyle: TextStyle(
-                                            fontFamily: 'Montserrat',
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xff1f1b51)),
-                                        focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color(0xff1f1b51)))),
-                                  ),
+                                  },
                                 ),
-                              ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: _nameController,
-                                decoration: InputDecoration(
-                                    labelText: 'FULL NAME ',
-                                    labelStyle: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff1f1b51)),
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color(0xff1f1b51)))),
-                              ),
-                              SizedBox(height: 10.0),
-                              TextField(
-                                decoration: InputDecoration(
-                                    labelText: 'TOTAL PERSON ',
-                                    labelStyle: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff1f1b51)),
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color(0xff1f1b51)))),
-                              ),
-                              TextField(
-                                maxLines: 3,
-                                decoration: InputDecoration(
-                                    labelText: 'SPECIAL REQUEST ',
-                                    labelStyle: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff1f1b51)),
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color(0xff1f1b51)))),
-                              ),
-                              SizedBox(height: 50.0),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: Container(
-                                    height: 40.0,
-                                    child: Material(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      shadowColor: Colors.blueAccent,
-                                      color: Color(0xff1f1b51),
-                                      elevation: 7.0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          confirDetails();
-                                        },
-                                        child: Center(
-                                          child: Text(
-                                            'Confirm Details',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Montserrat'),
-                                          ),
-                                        ),
-                                      ),
-                                    )),
-                              ),
-                            ],
-                          ),
-                        )),
+
+                                Padding(
+                                  padding: const EdgeInsets.all(32.0),
+                                  child: Text('A/C', style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20.0
+                                  ),),
+                                ),
+
+
+                              ],
+                            ),
+
+                            SizedBox(height: 10.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Color(0xff1f1b51),
+                                    ),
+                                    onPressed: () {
+                                      clickDisplay('date');
+                                    },
+                                    child: Text('Date')),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Color(0xff1f1b51),
+                                    ),
+                                    onPressed: () {
+                                      clickDisplay('time');
+                                    },
+                                    child: Text('Time '))
+                              ],
+                            ),
+                            SizedBox(height: 10.0),
+                            showData(),
+                            SizedBox(height: 50),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xff1f1b51),
+                                ),
+                                onPressed: () {
+                                  if ((_formKey.currentState.validate())) {
+                                    confirDetails();
+                                  }
+                                },
+                                child: Text('Confirm Details'))
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

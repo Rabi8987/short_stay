@@ -147,7 +147,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   validator: (String value) {
                                     if (value.isEmpty) {
                                       return 'Please Enter Mobile Number';
-                                    }
+                                    }else
+                                      if(value.length < 11){
+                                        return 'Please Enter valid Mobile Number';
+                                      }
                                     return null;
                                   },
                                   onSaved: (String value) {
@@ -205,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     return null;
                                   },
                                   onSaved: (String value) {
-                                    email = value;
+                                    address = value;
                                   },
                                   decoration: InputDecoration(
                                       labelText: 'ADDRESS',

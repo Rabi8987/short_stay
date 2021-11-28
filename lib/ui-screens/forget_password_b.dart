@@ -6,34 +6,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:short_stay/models/User.dart';
 import 'package:short_stay/services/api.dart';
 import 'package:short_stay/ui-screens/bottom_navigation_bar.dart';
+import 'package:short_stay/ui-screens/forget_password_c.dart';
 import 'package:short_stay/ui-screens/reservation_info_screen.dart';
 
-class otpScreen extends StatefulWidget {
-  final User user;
+class fpb extends StatefulWidget {
+  final String mobile;
 
-  const otpScreen({Key key, @required this.user}) : super(key: key);
+  const fpb({Key key, @required this.mobile}) : super(key: key);
 
   @override
-  _otpScreenState createState() => _otpScreenState();
+  _fpbState createState() => _fpbState();
 }
 
-class _otpScreenState extends State<otpScreen> with TickerProviderStateMixin {
+class _fpbState extends State<fpb> with TickerProviderStateMixin {
   bool status = false;
   int otp;
+  final _optController = TextEditingController();
   bool showOTP = false;
+  String mobile;
 
   void initState() {
-    Future<int> response = Api().sendOtp(widget.user.mobile,"new");
+    print("zain : ");
+    print(widget.mobile);
+    Future<int> response = Api().sendOtp(widget.mobile,"forget");
     print(response);
     response.then((value) => {
-          if (value != 0)
-            {
-              otp = value,
-              setState(() {
-                showOTP = true;
-              })
-            }
-        });
+      if (value != 0)
+        {
+          otp = value,
+          setState(() {
+            showOTP = true;
+          })
+        }
+    });
     super.initState();
   }
 
@@ -43,59 +48,45 @@ class _otpScreenState extends State<otpScreen> with TickerProviderStateMixin {
     });
     Future<User> _userData;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Future<bool> response = Api().verifyOtp(widget.user.mobile, pin);
+    Future<bool> response = Api().verifyOtp(widget.mobile, pin);
     response.then((value) => {
-          if (value != false)
-            {
-              _userData = Api().registerUser(widget.user),
-              if (_userData != null)
-                {
-                  _userData.then((value) => {
-                        print("za"),
-                        print(value.id),
-                        prefs.setBool("Session", true),
-                        prefs.setInt("userId", value.id),
-                        prefs.setString("full_name", value.name),
-                        prefs.setString("mobile", value.mobile),
-                        prefs.setString("email", value.email),
-                        prefs.setString("username", value.username),
-                        prefs.setString("address", value.address),
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => bottomBar()))
-                      })
-                }
-            }
-          else
-            {
-              setState(() {
-                status = false;
-              }),
-              print("else"),
-              Fluttertoast.showToast(
-                  msg: "OTP Is Incorrect",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0)
-            }
-        });
+      if (value != false)
+        {
+            Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => fpc(mobile: widget.mobile,)))
+        }else{
+          setState(() {
+            status = false;
+          }),
+          print("else"),
+          Fluttertoast.showToast(
+              msg: "OTP Is Incorrect",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0)
+        }
+    });
   }
-
+  void dispose() {
+    _optController.dispose();
+    super.dispose();
+  }
   screenData() {
     if (status) {
       return Padding(
         padding: const EdgeInsets.all(64.0),
         child: Center(
             child: SpinKitFadingCircle(
-          color: Color(0xff1f1b51),
-          size: 50.0,
-          controller: AnimationController(
-              vsync: this, duration: const Duration(milliseconds: 1200)),
-        )),
+              color: Color(0xff1f1b51),
+              size: 50.0,
+              controller: AnimationController(
+                  vsync: this, duration: const Duration(milliseconds: 1200)),
+            )),
       );
     } else {
       return ListView(
@@ -121,6 +112,7 @@ class _otpScreenState extends State<otpScreen> with TickerProviderStateMixin {
             child: PinEntryTextField(
                 fields: 4,
                 onSubmit: (String pin) {
+                  _optController.text = pin;
                   tokenRequest(pin); //end showDialog()
                 }),
           ),
@@ -164,8 +156,8 @@ class _otpScreenState extends State<otpScreen> with TickerProviderStateMixin {
   showingOTP() {
     if (showOTP) {
       return Text("Your otp is : " + otp.toString(),
-      style: TextStyle(fontSize: 20,
-      fontWeight: FontWeight.bold),);
+        style: TextStyle(fontSize: 20,
+            fontWeight: FontWeight.bold),);
     } else {
       return Text("");
     }

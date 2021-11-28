@@ -10,6 +10,8 @@ class BookingDetail {
   String email;
   int userId;
   int roomId;
+  String checkInTime;
+  String checkOutTime;
 
   BookingDetail({
     this.id,
@@ -18,7 +20,9 @@ class BookingDetail {
     this.mobile,
     this.email,
     this.userId,
-    this.roomId
+    this.roomId,
+    this.checkInTime,
+    this.checkOutTime
   });
   factory BookingDetail.fromJson(Map<String, dynamic> json) => BookingDetail(
       id:json["id"],
@@ -27,7 +31,9 @@ class BookingDetail {
       mobile:json["mobile"],
       email:json["email"],
       userId:json["userId"],
-      roomId: json["roomId"]
+      roomId: json["roomId"],
+      checkInTime: json["checkInTime"],
+      checkOutTime: json["checkOutTime"]
   );
 
   Map<String, dynamic> toJson() => {
@@ -37,7 +43,9 @@ class BookingDetail {
     "mobile":mobile,
     "email":email,
     "userId":userId,
-    "roomId":roomId
+    "roomId":roomId,
+    "checkInTime":checkInTime,
+    "checkOutTime":checkOutTime
   };
 
 }

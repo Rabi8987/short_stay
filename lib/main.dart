@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:short_stay/ui-screens/login_screen.dart';
 import 'package:short_stay/ui-screens/reservation_info_screen.dart';
 import 'package:short_stay/ui-screens/splash_screen.dart';
 
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
-      // home: LoginScreen()
+      // home: ReservationInfo(),
     );
   }
 }

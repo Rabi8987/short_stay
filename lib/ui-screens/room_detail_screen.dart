@@ -1,22 +1,20 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:short_stay/models/HotelDetails.dart';
 import 'package:short_stay/models/RoomDetails.dart';
-import 'package:short_stay/ui-screens/bookig_details.dart';
-import 'package:short_stay/ui-screens/history_screen.dart';
 import 'package:short_stay/ui-screens/reservation_info_screen.dart';
-import 'package:short_stay/ui-screens/setting_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'favourite_screen.dart';
 import 'hotel_detail_screen.dart';
-import 'hotel_list_screen.dart';
 import 'login_screen.dart';
+import 'package:flutter_switch/flutter_switch.dart';
+
 
 class RoomDetails extends StatefulWidget {
   final RoomsDetails room;
   final HotelDetails hotel;
 
-  const RoomDetails({Key key, @required this.room, @required this.hotel}) : super(key: key);
+  const RoomDetails({Key key, @required this.room, @required this.hotel})
+      : super(key: key);
 
   @override
   _RoomDetailsState createState() => _RoomDetailsState();
@@ -32,21 +30,20 @@ class _RoomDetailsState extends State<RoomDetails> {
       MaterialPageRoute(builder: (context) => HotelsDetails()),
     );
   }
+
   Future<void> checkUser() async {
     WidgetsFlutterBinding.ensureInitialized();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var email = prefs.getString('email');
-    if( email == null)
-      {
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LoginScreen()));
-      }
-    else{
+    if (email == null) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    } else {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ReservationInfo(room: widget.room,hotel: widget.hotel)));
+              builder: (context) =>
+                  ReservationInfo(room: widget.room, hotel: widget.hotel)));
     }
   }
 
@@ -59,14 +56,14 @@ class _RoomDetailsState extends State<RoomDetails> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()  {
+      onWillPop: () {
         backButton();
         return Future.value(true);
       },
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xff1f1b51),
-          title: Text('Room'),
+          title: Center(child: Text('Room Details')),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -74,14 +71,50 @@ class _RoomDetailsState extends State<RoomDetails> {
             },
           ),
           automaticallyImplyLeading: false,
-
         ),
         body: Stack(
           children: <Widget>[
-            Container(
-                foregroundDecoration: BoxDecoration(color: Colors.black26),
-                height: 400,
-                child: Image.network(widget.room.image, fit: BoxFit.cover)),
+            // Container(
+            //     foregroundDecoration: BoxDecoration(color: Colors.black26),
+            //     height: 400,
+            //     child: Image.network(widget.room.image, fit: BoxFit.cover)),
+            CarouselSlider(
+              items: [
+                Image.asset('assets/images/1.jpg'),
+                Image.asset('assets/images/2.jpg'),
+                Image.asset('assets/images/3.jpg'),
+                Image.asset('assets/images/4.jpeg'),
+              ],
+              // .map((e) => ClipRRect(
+              //       borderRadius: BorderRadius.circular(8),
+              //       child: Stack(
+              //         fit: StackFit.expand,
+              //         children: <Widget>[
+              //           Image.network(
+              //             e,
+              //             width: 1050,
+              //             height: 350,
+              //             fit: BoxFit.cover,
+              //           )
+              //         ],
+              //       ),
+              //     ))
+              // .toList(),
+              options: CarouselOptions(
+                height: 200,
+                aspectRatio: 16 / 9,
+                viewportFraction: 0.8,
+                initialPage: 0,
+                enableInfiniteScroll: true,
+                reverse: false,
+                autoPlay: true,
+                autoPlayInterval: Duration(seconds: 3),
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: true,
+                scrollDirection: Axis.horizontal,
+              ),
+            ),
             SingleChildScrollView(
               padding: const EdgeInsets.only(top: 16.0, bottom: 20.0),
               child: Column(
@@ -93,7 +126,7 @@ class _RoomDetailsState extends State<RoomDetails> {
                     child: Text(
                       widget.room.category,
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 28.0,
                           fontWeight: FontWeight.bold),
                     ),
@@ -144,7 +177,7 @@ class _RoomDetailsState extends State<RoomDetails> {
                             Column(
                               children: <Widget>[
                                 Text(
-                                  "\PKR"+ widget.room.price.toString(),
+                                  "\PKR" + widget.room.price.toString(),
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -160,66 +193,50 @@ class _RoomDetailsState extends State<RoomDetails> {
                           ],
                         ),
                         const SizedBox(height: 30.0),
-                        Text(
-                          "Max Guest".toUpperCase(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 14.0),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Icon(
-                          Icons.attribution_outlined,
-                          color: Colors.black,
-                        ),
+
                         const SizedBox(height: 30.0),
-                        Container(
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey, width: 1),
-                              borderRadius: BorderRadius.circular(15)),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            hint: Text('No. of Room'),
-                            icon: const Icon(Icons.arrow_drop_down_outlined),
-                            iconSize: 24,
-                            elevation: 16,
-                            underline: SizedBox(),
-                            value: ValueChoose,
-                            onChanged: (newValue) {
-                              setState(() {
-                                ValueChoose = newValue;
-                              });
-                            },
-                            items: <String>['One', 'Two', 'Free', 'Four']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                        const SizedBox(height: 30.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0)),
-                            color: Color(0xff323e78),
-                            textColor: Colors.white,
-                            child: Text(
-                              "Book Now",
-                              style: TextStyle(fontWeight: FontWeight.normal),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Max Guest".toUpperCase(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14.0),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.attribution_outlined,
+                                      color: Colors.black,
+                                    ),
+                                    Text(
+                                      ' : ' + widget.room.capacity,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              ],
                             ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16.0,
-                              horizontal: 32.0,
-                            ),
-                            onPressed: () {
-                              checkUser();
-                            },
-                          ),
+                          ],
                         ),
                         const SizedBox(height: 30.0),
+                        Center(
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xff1f1b51),
+                              ),
+                              onPressed: () {
+                                checkUser();
+                              },
+                              child: Text('Book Room')),
+                        ),
                       ],
                     ),
                   ),

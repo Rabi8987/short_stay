@@ -1,60 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:short_stay/services/api.dart';
-import 'package:short_stay/ui-screens/bottom_navigation_bar.dart';
 
-class UpdatePassword extends StatefulWidget {
-  const UpdatePassword({Key key}) : super(key: key);
+import 'login_screen.dart';
+
+
+class fpc extends StatefulWidget {
+  final String mobile;
+
+  const fpc({Key key, @required this.mobile}) : super(key: key);
 
   @override
-  _UpdatePasswordState createState() => _UpdatePasswordState();
+  _fpcState createState() => _fpcState();
 }
 
-class _UpdatePasswordState extends State<UpdatePassword> with TickerProviderStateMixin {
+class _fpcState extends State<fpc> with TickerProviderStateMixin {
   bool status = false;
-  int userId;
-  String name, email, mobile, username;
-  bool session;
-  void backButton() async {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => bottomBar()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    String oldPassword, newPassword, confirmNewPassword;
-
     final _formKey = GlobalKey<FormState>();
-    void getSessionDetails() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      userId = prefs.getInt("userId");
-      name = prefs.getString("full_name");
-      email = prefs.getString("email");
-      mobile = prefs.getString("mobile");
-      username = prefs.getString("username");
-      session = prefs.getBool("Session");
-      print("zain setting");
-      print(userId);
-      print(name);
-      print(email);
-      print(mobile);
-      print(username);
-      print("session");
-      print(session);
-      setState(() {});
-    }
+    String  newPassword, confirmNewPassword;
 
-    @override
-    void initState() {
-      // TODO: implement initState
-      getSessionDetails();
-
-      super.initState();
-      // WidgetsBinding.instance.addPostFrameCallback((_) => screenData());
-    }
     updatePassword() {
       setState(() {
         status = true;
@@ -67,27 +34,21 @@ class _UpdatePasswordState extends State<UpdatePassword> with TickerProviderStat
       final form = _formKey.currentState;
       form.save();
       if (newPassword == confirmNewPassword) {
-        Future<bool> res = Api().updatePassword(oldPassword, newPassword);
+        Future<bool> res = Api().forgetPassword(widget.mobile,newPassword);
         res.then((value) => {
-              if (value)
-                {
-                  AlertDialog(
-                      title: Text('Password updated'),
-                      content: Text("Your password is updated."),
-                      actions: [
-                        okButton,
-                      ])
-                }else{
-                setState(() {
-                  status = false;
-                }),
-              }
-            });
+          if (value)
+            {
 
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => bottomBar()));
+      Navigator.push(
+      context,
+      MaterialPageRoute(
+      builder: (context) => LoginScreen()))
+            }else{
+            setState(() {
+              status = false;
+            }),
+          }
+        });
       } else {
         print("else");
         setState(() {
@@ -120,22 +81,6 @@ class _UpdatePasswordState extends State<UpdatePassword> with TickerProviderStat
               EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
               child: Column(
                 children: <Widget>[
-                  TextFormField(
-                    onSaved: (value) {
-                      oldPassword = value;
-                    },
-                    decoration: InputDecoration(
-                        labelText: 'Old Password',
-                        labelStyle: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                            BorderSide(color: Color(0xff1f1b51)))),
-                    obscureText: true,
-                  ),
-                  SizedBox(height: 20.0),
                   TextFormField(
                     onSaved: (value) {
                       newPassword = value;
@@ -189,16 +134,17 @@ class _UpdatePasswordState extends State<UpdatePassword> with TickerProviderStat
                           updatePassword();
                         }
                       },
-                      child: Text('Update Account'))
+                      child: Text('Reset Password'))
                 ],
               )),
         );
       }
     }
 
+
     return WillPopScope(
       onWillPop: () {
-        backButton();
+        // backButton();
         return Future.value(false);
       },
       child: Scaffold(
@@ -224,7 +170,7 @@ class _UpdatePasswordState extends State<UpdatePassword> with TickerProviderStat
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.fromLTRB(15.0, 80.0, 0.0, 0.0),
-                    child: Text('Change',
+                    child: Text('Forget',
                         style: TextStyle(
                             fontSize: 50.0, fontWeight: FontWeight.bold)),
                   ),

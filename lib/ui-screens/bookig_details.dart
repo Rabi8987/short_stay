@@ -8,7 +8,6 @@ import 'package:short_stay/services/api.dart';
 import 'package:short_stay/ui-screens/celebrate_booking.dart';
 import 'bottom_navigation_bar.dart';
 
-
 class BookingDetails extends StatefulWidget {
   final BookingDetail booking;
   final RoomsDetails room;
@@ -27,8 +26,9 @@ class BookingDetails extends StatefulWidget {
   _BookingDetailsState createState() => _BookingDetailsState();
 }
 
-class _BookingDetailsState extends State<BookingDetails> with TickerProviderStateMixin  {
-  Map<String,dynamic> bookingDetails;
+class _BookingDetailsState extends State<BookingDetails>
+    with TickerProviderStateMixin {
+  Map<String, dynamic> bookingDetails;
   String checkInDay, checkOutDay;
   int bookingId;
   bool status = false;
@@ -53,8 +53,8 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
 
   void bookNow() {
     print('room booking');
-    Future<Map<String,dynamic>> roomBooking =
-        Api().roomBooking(widget.booking, widget.hotel, widget.room,widget.ac_status);
+    Future<Map<String, dynamic>> roomBooking = Api().roomBooking(
+        widget.booking, widget.hotel, widget.room, widget.ac_status);
     // ignore: unrelated_type_equality_checks
     if (roomBooking != false) {
       roomBooking.then((value) => {
@@ -65,11 +65,13 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                 }),
                 bookingDetails = value,
                 bookingId = value["bookingId"]
-              }else{
-              setState(() {
-                status = false;
-              })
-            }
+              }
+            else
+              {
+                setState(() {
+                  status = false;
+                })
+              }
           });
     }
   }
@@ -113,10 +115,8 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8.0),
-                                    child: Text(
-                                        widget.hotel.hotel_descriptions,
-                                        style:
-                                        TextStyle(color: Colors.black)),
+                                    child: Text(widget.hotel.hotel_descriptions,
+                                        style: TextStyle(color: Colors.black)),
                                   ),
                                   Divider(
                                     height: 50,
@@ -124,33 +124,32 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                                   ),
                                   Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Check In',
                                             style: TextStyle(
                                                 decoration:
-                                                TextDecoration.underline,
+                                                    TextDecoration.underline,
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 24),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 8.0),
-                                            child: Text(
-                                                widget.booking.checkIn,
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: Text(widget.booking.checkIn,
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 22)),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 8.0),
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
                                             child: Text(
                                               checkInDay,
                                               style: TextStyle(
@@ -163,29 +162,28 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                                       ),
                                       Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Check Out',
                                             style: TextStyle(
                                                 decoration:
-                                                TextDecoration.underline,
+                                                    TextDecoration.underline,
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 24),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 8.0),
-                                            child: Text(
-                                                widget.booking.checkOut,
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: Text(widget.booking.checkOut,
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 22)),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 8.0),
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
                                             child: Text(
                                               checkOutDay,
                                               style: TextStyle(
@@ -199,7 +197,6 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                                     ],
                                   )
                                 ],
-
                               )),
                         ],
                       ),
@@ -293,7 +290,7 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                                     padding: const EdgeInsets.only(top: 8.0),
                                     child: Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text('Total Price',
                                             style: TextStyle(
@@ -301,7 +298,9 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                                                 fontStyle: FontStyle.italic,
                                                 fontSize: 22)),
                                         Text(
-                                          'PKR ' + bookingDetails['total'].toString(),
+                                          'PKR ' +
+                                              bookingDetails['total']
+                                                  .toString(),
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontStyle: FontStyle.italic,
@@ -322,9 +321,7 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
                       primary: Color(0xff1f1b51),
                     ),
                     onPressed: () {
-
                       updateStatus();
-
                     },
                     child: Text('Book Now'))
               ],
@@ -337,24 +334,24 @@ class _BookingDetailsState extends State<BookingDetails> with TickerProviderStat
         padding: const EdgeInsets.all(64.0),
         child: Center(
             child: SpinKitFadingCircle(
-              color: Color(0xff1f1b51),
-              size: 50.0,
-              controller: AnimationController(
-                  vsync: this, duration: const Duration(milliseconds: 1200)),
-            )),
+          color: Color(0xff1f1b51),
+          size: 50.0,
+          controller: AnimationController(
+              vsync: this, duration: const Duration(milliseconds: 1200)),
+        )),
       );
     }
   }
 
-  updateStatus(){
+  updateStatus() {
     String status = "pending";
     Future<bool> response = Api().updateBooking(status, bookingId);
     response.then((value) => {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => bookingDone()))
-
-    });
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => bookingDone()))
+        });
   }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

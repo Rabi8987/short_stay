@@ -22,8 +22,7 @@ class _CardListState extends State<CardList> {
   bool session;
   bool check;
   String Address = 'search';
-  double lat,long;
-
+  double lat, long;
 
   Future<Position> _getGeoLocationPosition() async {
     bool serviceEnabled;
@@ -56,18 +55,21 @@ class _CardListState extends State<CardList> {
     }
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
 
     lat = position.latitude;
     long = position.longitude;
     return position;
   }
-  Future<void> GetAddressFromLatLong(Position position)async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+
+  Future<void> GetAddressFromLatLong(Position position) async {
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark place = placemarks[0];
-    Address = '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
-    setState(()  {
-    });
+    Address =
+        '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+    setState(() {});
   }
 
   @override
@@ -75,19 +77,13 @@ class _CardListState extends State<CardList> {
     getSessionDetails();
     Future<Position> position = _getGeoLocationPosition();
     position.then((value) => {
-      GetAddressFromLatLong(value),
-    _hotelData = null,
-      getCity().then((value) =>
-      {
-        print("city : "+value),
-        _hotelData = Api().getHotels(lat, long, value),
-      }
-      )
-
-    });
-    setState(() {
-
-    });
+          GetAddressFromLatLong(value),
+          _hotelData = null,
+          getCity().then((value) => {
+                _hotelData = Api().getHotels(lat, long, value),
+              })
+        });
+    setState(() {});
     super.initState();
   }
 
@@ -95,9 +91,7 @@ class _CardListState extends State<CardList> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     return prefs.get("city");
-
   }
-
 
   void getSessionDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -112,8 +106,8 @@ class _CardListState extends State<CardList> {
 
   bool addToFavourite(String unique_prefix) {
     if (userId != null) {
-      Future<bool> response = Api().addToFavourite(
-          unique_prefix, userId, 'add');
+      Future<bool> response =
+          Api().addToFavourite(unique_prefix, userId, 'add');
       print(response);
       check = true;
       return check;
@@ -149,13 +143,11 @@ class _CardListState extends State<CardList> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => cityList()));
-
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => cityList()));
               },
               icon: Icon(Icons.my_location),
             ),
-
           ],
           centerTitle: true,
           elevation: 16,
@@ -172,10 +164,7 @@ class _CardListState extends State<CardList> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return SizedBox(
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height,
+                  height: MediaQuery.of(context).size.height,
                   child: ListView.builder(
                       itemCount: snapshot.data.data.length,
                       itemBuilder: (context, index) {
@@ -183,7 +172,7 @@ class _CardListState extends State<CardList> {
                         return GestureDetector(
                           onTap: () async {
                             SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
+                                await SharedPreferences.getInstance();
                             prefs.setString('unique_code', hotel.unique_prefix);
                             Navigator.push(
                                 context,
@@ -216,15 +205,15 @@ class _CardListState extends State<CardList> {
                                         padding: const EdgeInsets.all(16.0),
                                         child: Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                                              CrossAxisAlignment.end,
                                           children: [
                                             Expanded(
                                               child: Container(
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     // ExpansionPanel(headerBuilder: headerBuilder, body: body)
                                                     Text(
@@ -237,15 +226,23 @@ class _CardListState extends State<CardList> {
                                                             .hotel_descriptions,
                                                         style: TextStyle(
                                                             color:
-                                                            Colors.white)),
-                                                    const SizedBox(height: 10.0),
-Row(
+                                                                Colors.white)),
+                                                    const SizedBox(
+                                                        height: 10.0),
+                                                    Row(
                                                       children: [
                                                         Text(
-                                                          "Rating".toUpperCase() + ' ' + hotel.rating + ' ',
+                                                          "Rating".toUpperCase() +
+                                                              ' ' +
+                                                              hotel.rating +
+                                                              ' ',
                                                           style: TextStyle(
-                                                              color: Colors.white,
-                                                              fontSize: 16, fontWeight: FontWeight.bold),
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ),
                                                         Icon(
                                                           Icons.star,
@@ -253,47 +250,68 @@ Row(
                                                         )
                                                       ],
                                                     ),
-
                                                   ],
                                                 ),
                                               ),
                                             ),
-                                            InkWell(
-                                              customBorder: new CircleBorder(
-                                                side: BorderSide(
-                                                  width: 3,
-                                                ),
-                                              ),
-                                              onTap: () {
-                                                bool tempChecl = addToFavourite(
-                                                    hotel.unique_prefix);
-                                                if (tempChecl) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                      const SnackBar(
+                                            Column(
+                                              children: [
+                                                // Text("Distance".toUpperCase()+
+                                                //     hotel.distance +
+                                                //     'KM',
+                                                //     style: TextStyle(
+                                                //         color: Colors.white)),
+                                                // const SizedBox(height: 10.0),
+                                                // Text("Min.Price".toUpperCase() +
+                                                //     ' ' +
+                                                //     hotel.minprice +
+                                                //     'PKR',
+                                                //     style: TextStyle(
+                                                //         color: Colors.white)),
+                                                const SizedBox(height: 10.0),
+                                                InkWell(
+                                                  customBorder:
+                                                      new CircleBorder(
+                                                    side: BorderSide(
+                                                      width: 3,
+                                                    ),
+                                                  ),
+                                                  onTap: () {
+                                                    bool tempChecl =
+                                                        addToFavourite(hotel
+                                                            .unique_prefix);
+                                                    if (tempChecl) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              const SnackBar(
                                                         content: Text(
                                                             'Added To Favourite'),
                                                         duration: Duration(
                                                             seconds: 2,
                                                             milliseconds: 500),
                                                       ));
-                                                } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                      const SnackBar(
+                                                    } else {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              const SnackBar(
                                                         content: Text(
                                                             'You are not logged in.'),
                                                         duration: Duration(
                                                             seconds: 2,
                                                             milliseconds: 500),
                                                       ));
-                                                }
-                                              },
-                                              splashColor: Colors.grey,
-                                              child: Icon(
-                                                Icons.favorite_outline_sharp,
-                                                color: Colors.white,
-                                              ),
+                                                    }
+                                                  },
+                                                  splashColor: Colors.grey,
+                                                  child: Icon(
+                                                    Icons
+                                                        .favorite_outline_sharp,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         )),

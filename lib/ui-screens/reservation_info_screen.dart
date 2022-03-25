@@ -24,7 +24,7 @@ class _ReservationInfoState extends State<ReservationInfo> {
   TimeOfDay time;
   TimeOfDay picked;
   bool asStatus = false;
-
+   int timeSlot;
 
   String getText() {
     if (time == null) {
@@ -112,115 +112,162 @@ class _ReservationInfoState extends State<ReservationInfo> {
           },
         )
       ]);
-    }
-    else if (displayAll) {
-      return Column(
+    } else if (displayAll) {
+      return Column(children: [
+        DateTimePicker(
+          initialValue: '',
+          // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
+          type: DateTimePickerType.date,
+          dateLabelText: 'Check In Date',
+          style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.bold,
+              color: Color(0xff1f1b51)),
+          firstDate: DateTime(2001),
+          lastDate: DateTime.now().add(Duration(days: 365)),
+          // This will add one year from current date
+          validator: (String value) {
+            if (value.isEmpty) {
+              return 'Please Enter check In Date';
+            }
+            return null;
+          },
+          onChanged: (value) {
+            if (value.isNotEmpty) {
+              setState(() {
+                _checkInController.text = value;
+              });
+            }
+          },
+          // We can also use onSaved
+          onSaved: (value) {
+            if (value.isNotEmpty) {
+              _checkInController.text = value;
+            }
+          },
+        ),
+        SizedBox(height: 10),
+        DateTimePicker(
+          initialValue: '',
+          // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
+          type: DateTimePickerType.date,
+          cursorColor: Color(0xff1f1b51),
+          dateLabelText: 'Check Out Date',
+          style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.bold,
+              color: Color(0xff1f1b51)),
+          firstDate: DateTime(2001),
+          lastDate: DateTime.now().add(Duration(days: 365)),
+          // This will add one year from current date
+          validator: (String value) {
+            if (value.isEmpty) {
+              return 'Please Enter check Out Date';
+            }
+            return null;
+          },
+          onChanged: (value) {
+            if (value.isNotEmpty) {
+              setState(() {
+                _checkOutController.text = value;
+              });
+            }
+          },
+          // We can also use onSaved
+          onSaved: (value) {
+            if (value.isNotEmpty) {
+              _checkOutController.text = value;
+            }
+          },
+        ),
+
+        TextField(
+          onTap: () {
+            _selectCheckInTime(context);
+          },
+          readOnly: true,
+          controller: _checkInTimeController,
+          decoration: InputDecoration(
+              labelText: 'TIME CHECK-IN',
+              labelStyle: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff1f1b51)),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xff1f1b51)))),
+        ),
+        // Text("${selectedTime.hour}:${selectedTime.minute}")
+        SizedBox(height: 10),
+        TextField(
+          onTap: () {
+            _selectCheckOutTime(context);
+          },
+          readOnly: true,
+          controller: _checkOutTimeController,
+          decoration: InputDecoration(
+              labelText: 'TIME CHECK-OUT',
+              labelStyle: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff1f1b51)),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xff1f1b51)))),
+        ),
+        SizedBox(height: 10.0),
+        Column(
           children: [
-            DateTimePicker(
-              initialValue: '',
-              // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
-              type: DateTimePickerType.date,
-              dateLabelText: 'Check In Date',
-              style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff1f1b51)),
-              firstDate: DateTime(2001),
-              lastDate: DateTime.now().add(Duration(days: 365)),
-              // This will add one year from current date
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please Enter check In Date';
-                }
-                return null;
-              },
-              onChanged: (value) {
-                if (value.isNotEmpty) {
-                  setState(() {
-                    _checkInController.text = value;
-                  });
-                }
-              },
-              // We can also use onSaved
-              onSaved: (value) {
-                if (value.isNotEmpty) {
-                  _checkInController.text = value;
-                }
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xff323e78),
+                    ),
+                    onPressed: () {
+                      timeSlot = 2;
+                    },
+                    child: Text('2 hours')),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xff323e78),
+                    ),
+                    onPressed: () {
+                      timeSlot = 4;
+
+                    },
+                    child: Text('4 hours'))
+              ],
             ),
-            SizedBox(height: 10),
-            DateTimePicker(
-              initialValue: '',
-              // initialValue or controller.text can be null, empty or a DateTime string otherwise it will throw an error.
-              type: DateTimePickerType.date,
-              cursorColor: Color(0xff1f1b51),
-              dateLabelText: 'Check Out Date',
-              style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff1f1b51)),
-              firstDate: DateTime(2001),
-              lastDate: DateTime.now().add(Duration(days: 365)),
-              // This will add one year from current date
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please Enter check Out Date';
-                }
-                return null;
-              },
-              onChanged: (value) {
-                if (value.isNotEmpty) {
-                  setState(() {
-                    _checkOutController.text = value;
-                  });
-                }
-              },
-              // We can also use onSaved
-              onSaved: (value) {
-                if (value.isNotEmpty) {
-                  _checkOutController.text = value;
-                }
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xff323e78),
+                    ),
+                    onPressed: () {
+                      timeSlot = 6;
+
+                    },
+                    child: Text('6 hours')),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xff323e78),
+                    ),
+                    onPressed: () {
+                      timeSlot = 8;
+
+                    },
+                    child: Text('8 hours'))
+              ],
             ),
-            TextField(
-              onTap: () {
-                _selectCheckInTime(context);
-              },
-              readOnly: true,
-              controller: _checkInTimeController,
-              decoration: InputDecoration(
-                  labelText: 'TIME CHECK-IN',
-                  labelStyle: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff1f1b51)),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff1f1b51)))),
-            ),
-            // Text("${selectedTime.hour}:${selectedTime.minute}")
-            SizedBox(height: 10),
-            TextField(
-              onTap: () {
-                _selectCheckOutTime(context);
-              },
-              readOnly: true,
-              controller: _checkOutTimeController,
-              decoration: InputDecoration(
-                  labelText: 'TIME CHECK-OUT',
-                  labelStyle: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff1f1b51)),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff1f1b51)))),
-            )
-          ]);
+          ],
+        ),
+      ]);
     } else {
       return Text("");
     }
   }
-
-
 
   clickDisplay(String flag) {
     setState(() {
@@ -272,7 +319,7 @@ class _ReservationInfoState extends State<ReservationInfo> {
         _checkInTimeController.text =
             picked_s.hour.toString() + ":" + picked_s.minute.toString();
       });
-    }else{
+    } else {
       setState(() {
         _checkInTimeController.text =
             selectedTime.hour.toString() + ":" + selectedTime.minute.toString();
@@ -320,8 +367,7 @@ class _ReservationInfoState extends State<ReservationInfo> {
   void confirDetails() {
     final form = _formKey.currentState;
     form.save();
-    var booking = BookingDetail.fromJson(
-        {
+    var booking = BookingDetail.fromJson({
       "id": null,
       "checkIn": _checkInController.text,
       "checkOut": _checkOutController.text,
@@ -335,9 +381,11 @@ class _ReservationInfoState extends State<ReservationInfo> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                BookingDetails(
-                    booking: booking, room: widget.room, hotel: widget.hotel,ac_status:asStatus)));
+            builder: (context) => BookingDetails(
+                booking: booking,
+                room: widget.room,
+                hotel: widget.hotel,
+                ac_status: asStatus)));
   }
 
   @override
@@ -345,10 +393,7 @@ class _ReservationInfoState extends State<ReservationInfo> {
     return new Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height,
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
@@ -358,120 +403,119 @@ class _ReservationInfoState extends State<ReservationInfo> {
           ),
         ),
         child: SingleChildScrollView(
-          child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-              Widget>[
-            Container(
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15.0, 60.0, 0.0, 0.0),
-                    child: Text(
-                      'Enter You Details',
-                      style: TextStyle(
-                          fontSize: 40.0, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(320.0, 40.0, 0.0, 0.0),
-                    child: Text(
-                      '.',
-                      style: TextStyle(
-                          fontSize: 60.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff1f1b51)),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 0,
-                color: Colors.transparent,
-                child: Column(
-                  children: [
-                    Form(
-                      key: _formKey,
-                      child: Center(
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              children: [
-                                FlutterSwitch(
-                                  width: 85.0,
-                                  height: 35.0,
-                                  valueFontSize: 15.0,
-                                  toggleSize: 30.0,
-                                  borderRadius: 30.0,
-                                  padding: 8.0,
-                                  showOnOff: true,
-                                  activeColor: Color(0xff1f1b51),
-                                  value: asStatus,
-                                  onToggle: (value) {
-                                    setState(() {
-                                      asStatus = value;
-                                    });
-                                  },
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.all(32.0),
-                                  child: Text('A/C', style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20.0
-                                  ),),
-                                ),
-
-
-                              ],
-                            ),
-
-                            SizedBox(height: 10.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Color(0xff1f1b51),
-                                    ),
-                                    onPressed: () {
-                                      clickDisplay('date');
-                                    },
-                                    child: Text('Date')),
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Color(0xff1f1b51),
-                                    ),
-                                    onPressed: () {
-                                      clickDisplay('time');
-                                    },
-                                    child: Text('Time '))
-                              ],
-                            ),
-                            SizedBox(height: 10.0),
-                            showData(),
-                            SizedBox(height: 50),
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: Color(0xff1f1b51),
-                                ),
-                                onPressed: () {
-                                  if ((_formKey.currentState.validate())) {
-                                    confirDetails();
-                                  }
-                                },
-                                child: Text('Confirm Details'))
-                          ],
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15.0, 60.0, 0.0, 0.0),
+                        child: Text(
+                          'Enter You Details',
+                          style: TextStyle(
+                              fontSize: 40.0, fontWeight: FontWeight.bold),
                         ),
                       ),
-                    ),
-                  ],
+                      Container(
+                        padding: EdgeInsets.fromLTRB(320.0, 40.0, 0.0, 0.0),
+                        child: Text(
+                          '.',
+                          style: TextStyle(
+                              fontSize: 60.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff1f1b51)),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ]),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.transparent,
+                    child: Column(
+                      children: [
+                        Form(
+                          key: _formKey,
+                          child: Center(
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: [
+                                    FlutterSwitch(
+                                      width: 85.0,
+                                      height: 35.0,
+                                      valueFontSize: 15.0,
+                                      toggleSize: 30.0,
+                                      borderRadius: 30.0,
+                                      padding: 8.0,
+                                      showOnOff: true,
+                                      activeColor: Color(0xff1f1b51),
+                                      value: asStatus,
+                                      onToggle: (value) {
+                                        setState(() {
+                                          asStatus = value;
+                                        });
+                                      },
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(32.0),
+                                      child: Text(
+                                        'A/C',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10.0),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Color(0xff1f1b51),
+                                        ),
+                                        onPressed: () {
+                                          clickDisplay('date');
+                                        },
+                                        child: Text('Date')),
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Color(0xff1f1b51),
+                                        ),
+                                        onPressed: () {
+                                          clickDisplay('time');
+                                        },
+                                        child: Text('Time '))
+                                  ],
+                                ),
+                                SizedBox(height: 10.0),
+                                showData(),
+                                SizedBox(height: 50),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Color(0xff1f1b51),
+                                    ),
+                                    onPressed: () {
+                                      if ((_formKey.currentState.validate())) {
+                                        confirDetails();
+                                      }
+                                    },
+                                    child: Text('Confirm Details'))
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
         ),
       ),
     );

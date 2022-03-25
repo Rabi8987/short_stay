@@ -17,11 +17,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   String name, username, mobile, email, address, password;
 
-  // final _nameController = TextEditingController();
-  // final _usernameController = TextEditingController();
-  // final _mobileController = TextEditingController();
-  // final _emailController = TextEditingController();
-  // final _addressController = TextEditingController();
   final _passwordController = TextEditingController();
 
   Timer _timer;
@@ -204,7 +199,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     if (value.isEmpty) {
                                       return 'Please a Enter Address';
                                     }
-
                                     return null;
                                   },
                                   onSaved: (String value) {

@@ -11,6 +11,8 @@ class HotelDetails{
   List<dynamic> hotel_images;
   String rating;
   String unique_prefix;
+  String distance;
+  String minprice;
 
   HotelDetails({
     this.hotel_name,
@@ -22,7 +24,9 @@ class HotelDetails{
     this.amenities,
     this.hotel_images,
     this.rating,
-    this.unique_prefix
+    this.unique_prefix,
+    this.minprice,
+    this.distance
   });
 
   factory HotelDetails.fromJson(Map<String, dynamic> json) => HotelDetails(
@@ -35,7 +39,10 @@ class HotelDetails{
       amenities:json["amenities"],
       hotel_images:json["hotel_images"],
       rating:json["rating"],
-      unique_prefix:json["unique_prefix"]
+      unique_prefix:json["unique_prefix"],
+      minprice:json["minprice"],
+      distance:json["distance"]
+
   );
 
   Map<String, dynamic> toJson() => {
@@ -48,6 +55,8 @@ class HotelDetails{
     "amenities":amenities,
     "hotel_images":hotel_images,
     "rating":rating,
-    "unique_prefix":unique_prefix
+    "unique_prefix":unique_prefix,
+    "distance":distance,
+    "minprice":minprice
   };
 }

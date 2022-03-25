@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:short_stay/services/api.dart';
-import 'package:short_stay/ui-screens/bottom_navigation_bar.dart';
 import 'package:short_stay/ui-screens/forget_password_b.dart';
-import 'package:short_stay/ui-screens/forget_password_c.dart';
-import 'package:short_stay/ui-screens/register_screen.dart';
 
 class fpa extends StatefulWidget {
   const fpa({Key key}) : super(key: key);

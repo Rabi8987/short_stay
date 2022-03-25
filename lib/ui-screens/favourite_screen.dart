@@ -65,9 +65,11 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
     print(session.runtimeType);
     if (session != null) {
       if (session == true) {
+        print("i am here");
         return FutureBuilder<Hotel>(
           future: _hotelData,
           builder: (context, snapshot) {
+            print(snapshot);
             if (snapshot.hasData) {
               return SizedBox(
                 height: MediaQuery.of(context).size.height,

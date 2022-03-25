@@ -23,7 +23,7 @@ class Api {
     print(long);
     print(city);
     var response = await http.post(
-        'https://www.shortstay.pk/shortstay/api/all-hotels',
+        'https://www.admin.shortstay.pk/api/all-hotels',
         body: jsonEncode({
           "city":city
         }),
@@ -42,7 +42,7 @@ class Api {
 
   Future<City> getCities() async {
     var response = await client.get(
-      'http://www.shortstay.pk/shortstay/api/all-cities',
+      'http://www.admin.shortstay.pk/api/all-cities',
     );
     if (response.statusCode == 200) {
       var jsonString = response.body;
@@ -59,7 +59,7 @@ class Api {
     print("api function");
     print(uniqueId);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/all-room',
+        'http://www.admin.shortstay.pk/api/all-room',
         body: jsonEncode({'unique_prefix': uniqueId}),
         headers: {"content-type": "application/json"});
     if (response.statusCode == 200) {
@@ -78,7 +78,7 @@ class Api {
   }
 
   Future<User> registerUser(User user) async {
-    var response = await http.post("http://shortstay.pk/shortstay/api/sign-up",
+    var response = await http.post("http://admin.shortstay.pk/api/sign-up",
         body: jsonEncode({
           "name": user.name,
           "username": user.username,
@@ -101,7 +101,7 @@ class Api {
   }
 
   Future<bool> loginUser(String mobile, String password) async {
-    var response = await http.post("http://shortstay.pk/shortstay/api/login",
+    var response = await http.post("http://admin.shortstay.pk/api/login",
         body: jsonEncode({
           "mobile": mobile,
           "password": password,
@@ -134,7 +134,7 @@ class Api {
   Future<int> sendOtp(String mobile, String flag) async {
     print(mobile);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/send-otp',
+        'http://www.admin.shortstay.pk/api/send-otp',
         body: jsonEncode({'mobile': mobile, 'flag': flag}),
         headers: {"content-type": "application/json"});
     print(response.body);
@@ -149,7 +149,7 @@ class Api {
 
   Future<bool> updateUser(User user) async {
     var response =
-        await http.post("http://shortstay.pk/shortstay/api/update-user",
+        await http.post("http://admin.shortstay.pk/api/update-user",
             body: jsonEncode({
               "id": user.id,
               "name": user.name,
@@ -181,7 +181,7 @@ class Api {
   Future<bool> verifyOtp(String mobile, String pin) async {
     print(mobile);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/verify-otp',
+        'http://www.admin.shortstay.pk/api/verify-otp',
         body: jsonEncode({'mobile': mobile, 'pin': pin}),
         headers: {"content-type": "application/json"});
     print('zain');
@@ -198,7 +198,7 @@ class Api {
   Future<Map<String, dynamic>> roomBooking(BookingDetail bookingDetail,
       HotelDetails hotelDetails, RoomsDetails roomsDetails,bool ac_status) async {
     var response =
-        await client.post('http://www.shortstay.pk/shortstay/api/room-booking',
+        await client.post('http://www.admin.shortstay.pk/api/room-booking',
             body: jsonEncode({
               'room_id': roomsDetails.id,
               'check_in': bookingDetail.checkIn,
@@ -228,7 +228,7 @@ class Api {
     String userId = prefs.getInt("userId").toString();
     print(userId);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/get-booking',
+        'http://www.admin.shortstay.pk/api/get-booking',
         body: jsonEncode({'id': userId}),
         headers: {"content-type": "application/json"});
     print(response.body);
@@ -247,7 +247,7 @@ class Api {
     String userId = prefs.getInt("userId").toString();
     print(userId);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/update-password',
+        'http://www.admin.shortstay.pk/api/update-password',
         body: jsonEncode(
             {'id': userId, 'old_pass': oldPassword, 'new_pass': newPassword}),
         headers: {"content-type": "application/json"});
@@ -264,7 +264,7 @@ class Api {
   Future<bool> forgetPassword(String mobile, String newPassword) async {
     print(mobile);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/forget-password',
+        'http://www.admin.shortstay.pk/api/forget-password',
         body: jsonEncode({'new_pass': newPassword, 'mobile': mobile}),
         headers: {"content-type": "application/json"});
     print(response.body);
@@ -281,7 +281,7 @@ class Api {
       String unique_prefix, int userId, String flag) async {
     print(userId);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/add-favourite',
+        'http://www.admin.shortstay.pk/api/add-favourite',
         body: jsonEncode(
             {'user_id': userId, 'unique_prefix': unique_prefix, 'flag': flag}),
         headers: {"content-type": "application/json"});
@@ -299,7 +299,7 @@ class Api {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int userId = prefs.getInt("userId");
     var response = await client.get(
-        'http://www.shortstay.pk/shortstay/api/get-favourite/' +
+        'http://www.admin.shortstay.pk/api/get-favourite/' +
             userId.toString());
     if (response.statusCode == 200) {
       var jsonString = response.body;
@@ -317,7 +317,7 @@ class Api {
     print(bookingId);
     print(status);
     var response = await client.post(
-        'http://www.shortstay.pk/shortstay/api/update-status',
+        'http://www.admin.shortstay.pk/api/update-status',
         body: jsonEncode({'status': status, 'id': bookingId}),
         headers: {"content-type": "application/json"});
     if (response.statusCode == 200) {
